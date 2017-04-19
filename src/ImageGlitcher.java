@@ -180,7 +180,9 @@ public class ImageGlitcher {
 		return sub;
 	}
 
+	// Will eventually make an array of luminance values via Perlin noise
 	public int[][] generateNoiseArray(int width, int height) {
+		// TODO: make this work
 		int[][] perlin = new int[height][width];
 		double[][] noise = new double[height][width];
 		// generate noise
@@ -192,7 +194,7 @@ public class ImageGlitcher {
 
 		for (int y = 0; y < height; y++) {
 			for (int x = 0; x < width; x++) {
-				map(noise[y][x], 0, 1, 0, 255);
+				noise[y][x] = noise[y][x] * 255;
 			}
 		}
 
@@ -204,10 +206,6 @@ public class ImageGlitcher {
 
 		return perlin;
 	}
-
-	/*public float noise(int t) {
-
-	}*/
 
 	/**
 	 * selects a subimage of in, then mirrors it across x = y
@@ -254,7 +252,7 @@ public class ImageGlitcher {
 	}
 
 	/**
-	 * 
+	 * maps values in the same manner as the map function from Processing
 	 * @param value
 	 * @param istart
 	 * @param istop
@@ -263,20 +261,20 @@ public class ImageGlitcher {
 	 * @return
 	 */
 	static public final double map(double value, 
-			float istart, 
-			float istop, 
-			float ostart, 
-			float ostop) {
-		return ostart + (ostop - ostart) * ((value - istart) / (istop - istart));
+			float inA, 
+			float inB, 
+			float outA, 
+			float outB) {
+		return outA + (outB - outA) * ((value - inA) / (inB - inA));
 	}
 	
 	/**
-	 * 
-	 * @param in - a BufferedImage object to be used as the new bufferedImage object
+	 * loads a buffered image from a file name
 	 * @param fileName - a string of the desired file name
 	 * @return a BufferedImage object loaded from input
 	 */
-	public BufferedImage load(BufferedImage in, String fileName) {
+	public BufferedImage load(String fileName) {
+		BufferedImage in = null;
 		try{
 			in = ImageIO.read(new File(fileName));
 		} catch (IOException e) {
@@ -285,6 +283,11 @@ public class ImageGlitcher {
 		return in;
 	}
 	
+	/**
+	 * saves image in to file
+	 * @param in
+	 * @param fileName
+	 */
 	public void save(BufferedImage in, String fileName) {
 		JPEGImageWriteParam jpegParams = new JPEGImageWriteParam(null);
 		jpegParams.setCompressionMode(ImageWriteParam.MODE_EXPLICIT);

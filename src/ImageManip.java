@@ -2,15 +2,15 @@ import java.awt.image.BufferedImage;
 
 public class ImageManip {
 	public static void main(String[] args) {
+		
 		String inName = "in.jpg";
 		String outName = "out.jpg";
-		BufferedImage in = null;
 
 		ImageGlitcher glitch = new ImageGlitcher();		
 
 		// Import image
 		System.err.println("Reading image...");
-		in = glitch.load(in, inName);
+		BufferedImage in = glitch.load(inName);
 
 		// Generate derivative arrays
 		System.err.println("Generating arrays...");
