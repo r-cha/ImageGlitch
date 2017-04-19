@@ -12,16 +12,22 @@ public class ImageManip {
 		System.err.println("Reading image...");
 		in = glitch.load(in, inName);
 
-		
-		// generate noise
-		int[][] noise = glitch.generateNoiseArray(in.getWidth(), in.getHeight());
-		for (int y = 0; y < in.getHeight(); y++) {
-			for (int x = 0; x < in.getWidth(); x++) {
-				in.setRGB(x, y, (noise[y][x]));
-			}
-		}
-		
+		// Generate derivative arrays
+		System.err.println("Generating arrays...");
+		int[][] rgb = glitch.makeRGB(in);
+		int[][] lum = glitch.makeLum(rgb);
 
+		// Sort arrays
+		System.err.println("Sorting...");
+		glitch.dependentQuicksort(rgb, lum);
+		glitch.rewriteImg(in, rgb);
+
+		// Block glitch image
+		System.err.println("Block glitching...");
+		for (int i = 500; i <= 1500; i += 500) {
+			glitch.blockGlitch(rgb, i, i);
+		}
+		glitch.rewriteImg(in, rgb);
 
 		// Save manipulated image
 		System.err.println("Saving final image...");
