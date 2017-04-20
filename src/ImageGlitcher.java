@@ -198,40 +198,6 @@ public class ImageGlitcher {
 	}
 
 	/**
-	 * generated a 2D noise field of the desired height
-	 * @param width - width of desired noise array
-	 * @param height - height of desired noise array
-	 * @return an int array of brightness values
-	 */
-	public int[][] generateNoise(int width, int height) {
-		// TODO: make this Perlin instead of true noise
-		int[][] perlin = new int[height][width];
-		double[][] noise = new double[height][width];
-		// generate noise
-		for (int y = 0; y < height; y++) {
-			for (int x = 0; x < width; x++) {
-				noise[y][x] = Math.random();
-			}
-		}
-		
-		// Map noise values to brightness values
-		for (int y = 0; y < height; y++) {
-			for (int x = 0; x < width; x++) {
-				noise[y][x] = noise[y][x] * 255;
-			}
-		}
-
-		// populate "Perlin" array (which is not yet actually perlin) with brightness values
-		for (int y = 0; y < height; y++) {
-			for (int x = 0; x < width; x++) {
-				perlin[y][x] = (int) noise[y][x];
-			}
-		}
-
-		return perlin;
-	}
-
-	/**
 	 * selects a subimage of in, then mirrors it across x = y
 	 * @param in - a BufferedImage obj
 	 */

@@ -6,13 +6,14 @@ public class ImageManip {
 		String inName = "in.jpg";
 		String outName = "out.jpg";
 
-		ImageGlitcher glitch = new ImageGlitcher();		
+		ImageGlitcher glitch = new ImageGlitcher();	
+		ResourceGenerator gen = new ResourceGenerator();
 
 		// Import image
 		System.err.println("Reading image...");
 		BufferedImage in = glitch.load(inName);
 
-		// Generate derivative arrays
+/*		// Generate derivative arrays
 		System.err.println("Generating arrays...");
 		int[][] rgb = glitch.generateRGB(in);
 		int[][] lum = glitch.generateLum(rgb);
@@ -28,10 +29,14 @@ public class ImageManip {
 			glitch.blockFlip(rgb, i, i);
 		}
 		glitch.rewriteImg(in, rgb);
-
+*/
+		// generate Checkerboard 
+		BufferedImage test = new BufferedImage(500, 500, BufferedImage.TYPE_INT_RGB);
+		int[][] check = gen.generateCheckerboard(500, 500, 7);
+		glitch.rewriteImg(test, check);
 		// Save manipulated image
 		System.err.println("Saving final image...");
-		glitch.save(in, outName);
+		glitch.save(test, outName);
 
 		System.err.println("Done!");
 
