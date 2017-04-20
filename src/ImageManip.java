@@ -11,32 +11,37 @@ public class ImageManip {
 
 		// Import image
 		System.err.println("Reading image...");
-		//BufferedImage in = glitch.load(inName);
+		BufferedImage in = glitch.load(inName);
 
-/*		// Generate derivative arrays
+		// Generate derivative arrays
 		System.err.println("Generating arrays...");
 		int[][] rgb = glitch.generateRGB(in);
 		int[][] lum = glitch.generateLum(rgb);
 
 		// Sort arrays
 		System.err.println("Sorting...");
-		glitch.dependentQuicksort(rgb, lum);
-		glitch.rewriteImg(in, rgb);
+		glitch.dependentColQuicksort(rgb, lum);
 
 		// Block glitch image
 		System.err.println("Block glitching...");
 		for (int i = 500; i <= 1500; i += 500) {
 			glitch.blockFlip(rgb, i, i);
 		}
+		rgb = glitch.generateInverse(rgb);
+		
+		lum = gen.generateCheckerboard(lum[0].length, lum.length, 15);
+		glitch.dependentRowQuicksort(rgb, lum);
+		for (int i = 500; i <= 1500; i += 500) {
+			glitch.blockFlip(rgb, i, i);
+		}
+
 		glitch.rewriteImg(in, rgb);
-*/
-		// generate Checkerboard 
-		BufferedImage test = new BufferedImage(500, 500, BufferedImage.TYPE_INT_RGB);
-		int[][] check = gen.generateCheckerboard(500, 500, 7);
-		glitch.rewriteImg(test, check);
+
+
+
 		// Save manipulated image
 		System.err.println("Saving final image...");
-		glitch.save(test, outName);
+		glitch.save(in, outName);
 
 		System.err.println("Done!");
 

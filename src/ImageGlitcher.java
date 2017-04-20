@@ -91,11 +91,11 @@ public class ImageGlitcher {
 
 	/**
 	 * SLOW, UNPREDICTABLE
-	 * sorts rgb array by luminance values
+	 * sorts rgb array rows by luminance values
 	 * @param rgb - an int arrray of rgb values
 	 * @param lume - an int array of luminance values
 	 */
-	public void dependentSelectionSort(int[][] rgb, int[][] lume) {
+	public void dependentSelectionRowSort(int[][] rgb, int[][] lume) {
 		int min;
 		for (int y = 0; y < rgb.length; y++) {
 			for (int x = 0; x < rgb[0].length - 1; x++) {
@@ -109,14 +109,62 @@ public class ImageGlitcher {
 	}
 
 	/**
-	 * NOT SLOW, ACTUALLY DOES ITS JOB
-	 * sorts rgb array by luminance values
+	 * SLOW, UNPREDICTABLE
+	 * sorts rgb array columns by luminance values
 	 * @param rgb - an int arrray of rgb values
 	 * @param lume - an int array of luminance values
 	 */
-	public void dependentQuicksort(int[][] rgb, int[][]lume) {
+	public void dependentSelectionColSort(int[][] rgb, int[][] lume) {
+		int[][] intermediateRGB = new int[rgb[0].length][rgb.length];
+		int[][] intermediateLum = new int[rgb[0].length][rgb.length];
 		for (int y = 0; y < rgb.length; y++) {
-			dependentSort(rgb[y], lume[y], 0, rgb[y].length - 1);
+			for (int x = 0; x < rgb[0].length - 1; x++) {
+				intermediateRGB[x][y] = rgb[y][x];
+				intermediateLum[x][y] = lume[y][x];
+			}
+		}
+		this.dependentSelectionRowSort(intermediateRGB, intermediateLum);
+		for (int y = 0; y < rgb.length; y++) {
+			for (int x = 0; x < rgb[0].length - 1; x++) {
+				rgb[y][x] = intermediateRGB[x][y];
+				lume[y][x] = intermediateLum[x][y];
+			}
+		}
+	}
+	
+	/**
+	 * NOT SLOW, ACTUALLY DOES ITS JOB
+	 * sorts rgb array rows by luminance values
+	 * @param rgb - an int arrray of rgb values
+	 * @param lume - an int array of luminance values
+	 */
+	public void dependentRowQuicksort(int[][] rgb, int[][]lume) {
+		for (int y = 0; y < rgb.length; y++) {
+			dependentQuicksort(rgb[y], lume[y], 0, rgb[y].length - 1);
+		}
+	}
+	
+	/**
+	 * NOT SLOW, ACTUALLY DOES ITS JOB
+	 * sorts rgb array colums by luminance values
+	 * @param rgb - an int arrray of rgb values
+	 * @param lume - an int array of luminance values
+	 */
+	public void dependentColQuicksort(int[][] rgb, int[][] lume) {
+		int[][] intermediateRGB = new int[rgb[0].length][rgb.length];
+		int[][] intermediateLum = new int[rgb[0].length][rgb.length];
+		for (int y = 0; y < rgb.length; y++) {
+			for (int x = 0; x < rgb[0].length - 1; x++) {
+				intermediateRGB[x][y] = rgb[y][x];
+				intermediateLum[x][y] = lume[y][x];
+			}
+		}
+		this.dependentRowQuicksort(intermediateRGB, intermediateLum);
+		for (int y = 0; y < rgb.length; y++) {
+			for (int x = 0; x < rgb[0].length - 1; x++) {
+				rgb[y][x] = intermediateRGB[x][y];
+				lume[y][x] = intermediateLum[x][y];
+			}
 		}
 	}
 
@@ -125,11 +173,11 @@ public class ImageGlitcher {
 	 * @param a
 	 * @param b
 	 */
-	private static void dependentSort(int[] a, int[] b, int low, int high) {
+	private static void dependentQuicksort(int[] a, int[] b, int low, int high) {
 		if (high <= low) return;
 		int j = partition(a, b, low, high);
-		dependentSort(a, b, low, j-1);
-		dependentSort(a, b, j+1, high);
+		dependentQuicksort(a, b, low, j-1);
+		dependentQuicksort(a, b, j+1, high);
 	}
 
 	/**

@@ -8,33 +8,24 @@ public class ResourceGenerator {
 	 * @return an int array of brightness values
 	 */
 	public int[][] generateNoise(int width, int height) {
-		// TODO: make this Perlin instead of true noise
-		int[][] perlin = new int[height][width];
-		double[][] noise = new double[height][width];
+		
+		int[][] noise = new int[height][width];
 		// generate noise
 		for (int y = 0; y < height; y++) {
 			for (int x = 0; x < width; x++) {
-				noise[y][x] = Math.random();
+				noise[y][x] = (int) Math.random() * 255;
 			}
 		}
-
-		// Map noise values to brightness values
-		for (int y = 0; y < height; y++) {
-			for (int x = 0; x < width; x++) {
-				noise[y][x] = noise[y][x] * 255;
-			}
-		}
-
-		// populate "Perlin" array (which is not yet actually perlin) with brightness values
-		for (int y = 0; y < height; y++) {
-			for (int x = 0; x < width; x++) {
-				perlin[y][x] = (int) noise[y][x];
-			}
-		}
-
-		return perlin;
+		return noise;
 	}
-
+	
+	/**
+	 * generates a checkerboard of black and white
+	 * @param width - width in pixels of desired board
+	 * @param height - width in height of desired board
+	 * @param tilesAcross - number of tiles across desired
+	 * @return an int array of rgb values
+	 */
 	public int[][] generateCheckerboard(int width, int height, int tilesAcross) {
 		int[][] checker = new int[height][width];
 		int tileWidth = width / tilesAcross;
