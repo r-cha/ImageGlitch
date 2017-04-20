@@ -11,7 +11,7 @@ public class ImageManip {
 
 		// Import image
 		System.err.println("Reading image...");
-		BufferedImage in = glitch.load(inName);
+		//BufferedImage in = glitch.load(inName);
 
 /*		// Generate derivative arrays
 		System.err.println("Generating arrays...");
