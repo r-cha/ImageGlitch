@@ -75,16 +75,18 @@ public class ImageGlitcher {
 
 
 	/**
-	 * sets in to the luminance values found in lum
-	 * @param in - a BufferedImage object
+	 * sets in to the brightness values found in lum
 	 * @param lume - an array of luminance values based on in
+	 * @return an int array of greysclae rgb values.
 	 */
-	public void generateGreyscaleByLum(BufferedImage in, int[][] lume) {
-		for (int y = 0; y < in.getHeight(); y++) {
-			for (int x = 0; x < in.getWidth(); x++) {
-				in.setRGB(x, y, (lume[y][x] * 0x110000) + (lume[y][x] * 0x1100) + (lume[y][x] * 0x11));
+	public int[][] generateRGBbyBrightness(int[][] lume) {
+		int[][] rgb = new int[lume.length][lume[0].length];
+		for (int y = 0; y < lume.length; y++) {
+			for (int x = 0; x < lume[0].length; x++) {
+				rgb [y][x] = (lume[y][x] * 0x110000) + (lume[y][x] * 0x1100) + (lume[y][x] * 0x11);
 			}
 		}
+		return rgb;
 	}
 
 	/**
@@ -189,15 +191,20 @@ public class ImageGlitcher {
 		// TODO: make this work
 		int x = (int) Math.random() * (in.getWidth() - (in.getWidth() / 8) + (in.getWidth() / 16));
 		int y = (int) Math.random() * (in.getHeight() - (in.getHeight() / 8) + (in.getHeight() / 16));
-		int w = (int) Math.random() * (500) + 1;
-		int h = (int) Math.random() * (500) + 1;
+		int w = (int) Math.random() * (250) + 250;
+		int h = (int) Math.random() * (250) + 250;
 		BufferedImage sub = in.getSubimage(x, y, w, h);
 		return sub;
 	}
 
-	// Will eventually make an array of luminance values via Perlin noise
+	/**
+	 * generated a 2D noise field of the desired height
+	 * @param width - width of desired noise array
+	 * @param height - height of desired noise array
+	 * @return an int array of brightness values
+	 */
 	public int[][] generateNoise(int width, int height) {
-		// TODO: make this work
+		// TODO: make this Perlin instead of true noise
 		int[][] perlin = new int[height][width];
 		double[][] noise = new double[height][width];
 		// generate noise
@@ -206,13 +213,15 @@ public class ImageGlitcher {
 				noise[y][x] = Math.random();
 			}
 		}
-
+		
+		// Map noise values to brightness values
 		for (int y = 0; y < height; y++) {
 			for (int x = 0; x < width; x++) {
 				noise[y][x] = noise[y][x] * 255;
 			}
 		}
 
+		// populate "Perlin" array (which is not yet actually perlin) with brightness values
 		for (int y = 0; y < height; y++) {
 			for (int x = 0; x < width; x++) {
 				perlin[y][x] = (int) noise[y][x];
@@ -264,23 +273,6 @@ public class ImageGlitcher {
 			}
 		}
 		return rgb;
-	}
-
-	/**
-	 * maps values in the same manner as the map function from Processing
-	 * @param value
-	 * @param istart
-	 * @param istop
-	 * @param ostart
-	 * @param ostop
-	 * @return
-	 */
-	static private final double map(double value, 
-			float inA, 
-			float inB, 
-			float outA, 
-			float outB) {
-		return outA + (outB - outA) * ((value - inA) / (inB - inA));
 	}
 	
 	/**
