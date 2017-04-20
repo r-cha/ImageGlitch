@@ -16,7 +16,7 @@ public class ImageGlitcher {
 	 * @param in - a BufferedImage object
 	 * @return an array of int rgb values
 	 */
-	public int[][] makeRGB(BufferedImage in) {
+	public int[][] generateRGB(BufferedImage in) {
 		int[][] rgb = new int[in.getHeight()][in.getWidth()];
 		for (int y = 0; y < in.getHeight(); y++) {
 			for (int x = 0; x < in.getWidth(); x++) {
@@ -32,7 +32,7 @@ public class ImageGlitcher {
 	 * @param in - a BufferedImage object
 	 * @return an array of int luminance values
 	 */
-	public int[][] makeLum(BufferedImage in) {
+	public int[][] generateLum(BufferedImage in) {
 		int[][] lume = new int[in.getHeight()][in.getWidth()];
 		for (int y = 0; y < in.getHeight(); y++) {
 			for (int x = 0; x < in.getWidth(); x++) {
@@ -48,7 +48,7 @@ public class ImageGlitcher {
 	 * @param rgb - an array of int rgb values
 	 * @return an array of int luminance values
 	 */
-	public int[][] makeLum(int[][] rgb) {
+	public int[][] generateLum(int[][] rgb) {
 		int[][] lume = new int[rgb.length][rgb[0].length];
 		for (int y = 0; y < rgb.length; y++) {
 			for (int x = 0; x < rgb[0].length; x++) {
@@ -57,6 +57,21 @@ public class ImageGlitcher {
 		}
 		return lume;
 	}
+	
+	/**
+	 * generate the inverse of the input rgb array
+	 * @param rgb - an int array of rgb values
+	 * @return an int array of rgb values inverse to the input
+	 */
+	public int[][] generateInverse(int[][] rgb) {
+		int[][] inverse = new int[rgb.length][rgb[0].length];
+		for (int y = 0; y < rgb.length; y++) {
+			for (int x = 0; x < rgb[0].length; x++) {
+				inverse[y][x] = 0xFFFFFF - rgb[y][x];
+			}
+		}
+		return inverse;
+	}
 
 
 	/**
@@ -64,7 +79,7 @@ public class ImageGlitcher {
 	 * @param in - a BufferedImage object
 	 * @param lume - an array of luminance values based on in
 	 */
-	public void makeGreyscaleByLum(BufferedImage in, int[][] lume) {
+	public void generateGreyscaleByLum(BufferedImage in, int[][] lume) {
 		for (int y = 0; y < in.getHeight(); y++) {
 			for (int x = 0; x < in.getWidth(); x++) {
 				in.setRGB(x, y, (lume[y][x] * 0x110000) + (lume[y][x] * 0x1100) + (lume[y][x] * 0x11));
@@ -78,7 +93,7 @@ public class ImageGlitcher {
 	 * @param rgb - an int arrray of rgb values
 	 * @param lume - an int array of luminance values
 	 */
-	public void lumSelectionSort(int[][] rgb, int[][] lume) {
+	public void dependentSelectionSort(int[][] rgb, int[][] lume) {
 		int min;
 		for (int y = 0; y < rgb.length; y++) {
 			for (int x = 0; x < rgb[0].length - 1; x++) {
@@ -170,7 +185,7 @@ public class ImageGlitcher {
 	 * @param in - a buffered image objec t from which you would like to make a sub image
 	 * @return a BufferedImage object
 	 */
-	public BufferedImage randomBlock(BufferedImage in) {
+	public BufferedImage generateRandomSubImg(BufferedImage in) {
 		// TODO: make this work
 		int x = (int) Math.random() * (in.getWidth() - (in.getWidth() / 8) + (in.getWidth() / 16));
 		int y = (int) Math.random() * (in.getHeight() - (in.getHeight() / 8) + (in.getHeight() / 16));
@@ -181,7 +196,7 @@ public class ImageGlitcher {
 	}
 
 	// Will eventually make an array of luminance values via Perlin noise
-	public int[][] generateNoiseArray(int width, int height) {
+	public int[][] generateNoise(int width, int height) {
 		// TODO: make this work
 		int[][] perlin = new int[height][width];
 		double[][] noise = new double[height][width];
@@ -211,7 +226,7 @@ public class ImageGlitcher {
 	 * selects a subimage of in, then mirrors it across x = y
 	 * @param in - a BufferedImage obj
 	 */
-	public void blockGlitch(BufferedImage in, int width, int height) {
+	public void blockFlip(BufferedImage in, int width, int height) {
 		int temp;
 		int rx = in.getWidth() / 2 - (width / 2);
 		int ry = in.getHeight() / 2 - (height / 2);
@@ -232,7 +247,7 @@ public class ImageGlitcher {
 	 * selects a subimage of in, then mirrors it across x = y
 	 * @param rgb - an array of rgb values
 	 */
-	public int[][] blockGlitch(int[][] a, int width, int height) {
+	public int[][] blockFlip(int[][] a, int width, int height) {
 		int temp;
 		int[][] rgb = a;
 		int rx = rgb[0].length / 2 - (width / 2);
@@ -260,7 +275,7 @@ public class ImageGlitcher {
 	 * @param ostop
 	 * @return
 	 */
-	static public final double map(double value, 
+	static private final double map(double value, 
 			float inA, 
 			float inB, 
 			float outA, 

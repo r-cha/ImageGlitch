@@ -14,8 +14,8 @@ public class ImageManip {
 
 		// Generate derivative arrays
 		System.err.println("Generating arrays...");
-		int[][] rgb = glitch.makeRGB(in);
-		int[][] lum = glitch.makeLum(rgb);
+		int[][] rgb = glitch.generateRGB(in);
+		int[][] lum = glitch.generateLum(rgb);
 
 		// Sort arrays
 		System.err.println("Sorting...");
@@ -25,7 +25,7 @@ public class ImageManip {
 		// Block glitch image
 		System.err.println("Block glitching...");
 		for (int i = 500; i <= 1500; i += 500) {
-			glitch.blockGlitch(rgb, i, i);
+			glitch.blockFlip(rgb, i, i);
 		}
 		glitch.rewriteImg(in, rgb);
 
