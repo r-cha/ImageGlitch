@@ -1,6 +1,7 @@
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.util.Random;
 
 import javax.imageio.IIOImage;
 import javax.imageio.ImageIO;
@@ -10,6 +11,8 @@ import javax.imageio.plugins.jpeg.JPEGImageWriteParam;
 import javax.imageio.stream.FileImageOutputStream;
 
 public class ImageGlitcher {
+	
+	private Random rand = new Random();
 
 	/**
 	 * creates an array of int values that represents the rgb value of each pixel of an image
@@ -95,7 +98,7 @@ public class ImageGlitcher {
 	 * @param rgb - an int arrray of rgb values
 	 * @param lume - an int array of luminance values
 	 */
-	public void dependentSelectionRowSort(int[][] rgb, int[][] lume) {
+	public void dependentRowSelectionSort(int[][] rgb, int[][] lume) {
 		int min;
 		for (int y = 0; y < rgb.length; y++) {
 			for (int x = 0; x < rgb[0].length - 1; x++) {
@@ -114,7 +117,7 @@ public class ImageGlitcher {
 	 * @param rgb - an int arrray of rgb values
 	 * @param lume - an int array of luminance values
 	 */
-	public void dependentSelectionColSort(int[][] rgb, int[][] lume) {
+	public void dependentColSelectionSort(int[][] rgb, int[][] lume) {
 		int[][] intermediateRGB = new int[rgb[0].length][rgb.length];
 		int[][] intermediateLum = new int[rgb[0].length][rgb.length];
 		for (int y = 0; y < rgb.length; y++) {
@@ -123,7 +126,7 @@ public class ImageGlitcher {
 				intermediateLum[x][y] = lume[y][x];
 			}
 		}
-		this.dependentSelectionRowSort(intermediateRGB, intermediateLum);
+		this.dependentRowSelectionSort(intermediateRGB, intermediateLum);
 		for (int y = 0; y < rgb.length; y++) {
 			for (int x = 0; x < rgb[0].length - 1; x++) {
 				rgb[y][x] = intermediateRGB[x][y];
@@ -231,16 +234,16 @@ public class ImageGlitcher {
 	}
 
 	/**
-	 * selects a random subimage from the input and returns it for manipulation
+	 * selects a random subimage from the input and returns it for manipulation. 
+	 * The subimage top left is located somewhere in the center 7/8 of the image, can extend as far as the right edge of the image, and is less than or equal to 1/32 * the height of the image
 	 * @param in - a buffered image objec t from which you would like to make a sub image
 	 * @return a BufferedImage object
 	 */
 	public BufferedImage generateRandomSubImg(BufferedImage in) {
-		// TODO: make this work
-		int x = (int) Math.random() * (in.getWidth() - (in.getWidth() / 8) + (in.getWidth() / 16));
-		int y = (int) Math.random() * (in.getHeight() - (in.getHeight() / 8) + (in.getHeight() / 16));
-		int w = (int) Math.random() * (250) + 250;
-		int h = (int) Math.random() * (250) + 250;
+		int x = (int) (rand.nextDouble() * (7 * (in.getWidth() / 8))) + (in.getWidth() / 16);
+		int y = (int) (rand.nextDouble() * (7 * (in.getHeight() / 8))) + (in.getHeight() / 16);
+		int w = (int) (rand.nextDouble() * (in.getWidth() - x));
+		int h = (int) Math.min(((rand.nextDouble() * (in.getHeight() - y)) / 2), (in.getHeight() / 32));
 		BufferedImage sub = in.getSubimage(x, y, w, h);
 		return sub;
 	}
