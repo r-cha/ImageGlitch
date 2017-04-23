@@ -1,4 +1,5 @@
 import java.awt.image.BufferedImage;
+import java.util.Random;
 
 public class ImageManip {
 	public static void main(String[] args) {
@@ -6,6 +7,9 @@ public class ImageManip {
 		String inName = "in.jpg";
 		String outName = "out.jpg";
 		final int glitches = 30;
+		int task;
+
+		Random rand = new Random();
 
 
 
@@ -20,8 +24,15 @@ public class ImageManip {
 			BufferedImage sub = glitch.generateRandomSubImg(in);
 			int[][] rgb = glitch.generateRGB(sub);
 			int[][] lum = glitch.generateLum(rgb);
-
-			glitch.dependentRowSelectionSort(rgb, lum);
+			task = rand.nextInt(2);
+			switch (task) {
+			case 0: 
+				glitch.blockFlip(rgb);
+				break;
+			case 1:
+				glitch.dependentRowQuicksort(rgb, lum);
+				break;
+			}
 			glitch.rewriteImg(sub, rgb);
 		}
 

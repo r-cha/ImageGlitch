@@ -235,58 +235,55 @@ public class ImageGlitcher {
 
 	/**
 	 * selects a random subimage from the input and returns it for manipulation. 
-	 * The subimage top left is located somewhere in the center 7/8 of the image, can extend as far as the right edge of the image, and is less than or equal to 1/32 * the height of the image
-	 * @param in - a buffered image objec t from which you would like to make a sub image
+	 * The subimage top left is located somewhere in the center 7/8 of the image, can extend as far as the right edge of the image, and is less than or equal to 1/16 * the height of the image
+	 * @param in - a buffered image object from which you would like to make a sub image
 	 * @return a BufferedImage object
 	 */
 	public BufferedImage generateRandomSubImg(BufferedImage in) {
 		int x = (int) (rand.nextDouble() * (7 * (in.getWidth() / 8))) + (in.getWidth() / 16);
 		int y = (int) (rand.nextDouble() * (7 * (in.getHeight() / 8))) + (in.getHeight() / 16);
 		int w = (int) (rand.nextDouble() * (in.getWidth() - x));
-		int h = (int) Math.min(((rand.nextDouble() * (in.getHeight() - y)) / 2), (in.getHeight() / 32));
+		int h = (int) Math.min(((rand.nextDouble() * (in.getHeight() - y)) / 2) + 1, (in.getHeight() / 16));
 		BufferedImage sub = in.getSubimage(x, y, w, h);
 		return sub;
 	}
 
 	/**
-	 * selects a subimage of in, then mirrors it across x = y
+	 * mirrors an image across x = y
 	 * @param in - a BufferedImage obj
 	 */
-	public void blockFlip(BufferedImage in, int width, int height) {
+	public void blockFlip(BufferedImage in) {
+		
+		int rh = in.getHeight();
+		int rw = in.getWidth();
 		int temp;
-		int rx = in.getWidth() / 2 - (width / 2);
-		int ry = in.getHeight() / 2 - (height / 2);
-		int rw = width;
-		int rh = height;
-
-		for (int y = 0; y < rh /2; y++) {
+		
+		for (int y = 0; y < rh / 2; y++) {
 			for (int x = 0; x < rw; x++) { 
-				temp = in.getRGB(rx + x, ry + y);
-				in.setRGB(rx + x, ry + y,  in.getRGB(rw + rx - x, ry + rh - y));
-				in.setRGB(rw + rx - x, ry + rh - y, temp);
+				temp = in.getRGB(x, y);
+				in.setRGB(x, y,  in.getRGB((rw - 1) - x, (rh - 1) - y));
+				in.setRGB((rw - 1) - x, (rh - 1) - y, temp);
 			}
 		}
 
 	}
 
 	/**
-	 * selects a subimage of in, then mirrors it across x = y
+	 * mirrors an rgb array across x = y
 	 * @param rgb - an array of rgb values
 	 */
-	public int[][] blockFlip(int[][] a, int width, int height) {
+	public int[][] blockFlip(int[][] a) {
 		int temp;
 		int[][] rgb = a;
-		int rx = rgb[0].length / 2 - (width / 2);
-		int ry = rgb.length / 2 - (height / 2);
-		int rw = width;
-		int rh = height;
+		int rw = a[0].length;
+		int rh = a.length;
 
 		for (int y = 0; y < rh /2; y++) {
 			for (int x = 0; x < rw; x++) { 
 
-				temp = rgb[ry + y][rx + x];
-				rgb[ry + y][rx + x] = rgb[ry + rh - y][rw + rx - x];
-				rgb[ry + rh - y][rw + rx - x] = temp;
+				temp = rgb[y][x];
+				rgb[y][x] = rgb[(rh - 1) - y][(rw - 1) - x];
+				rgb[(rh - 1) - y][(rw - 1) - x] = temp;
 			}
 		}
 		return rgb;
