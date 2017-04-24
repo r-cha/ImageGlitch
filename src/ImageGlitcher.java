@@ -11,8 +11,16 @@ import javax.imageio.plugins.jpeg.JPEGImageWriteParam;
 import javax.imageio.stream.FileImageOutputStream;
 
 public class ImageGlitcher {
-	
+
 	private Random rand = new Random();
+	
+	public static final int EDGE_PAD = 0;
+	public static final int EDGE_REFLECT = 1;
+	public static final int EDGE_WRAP = 2;
+	
+	public static final int CHANNEL_RED = 16;
+	public static final int CHANNEL_GREEN = 8;
+	public static final int CHANNEL_BLUE = 0;
 
 	/**
 	 * creates an array of int values that represents the rgb value of each pixel of an image
@@ -60,7 +68,7 @@ public class ImageGlitcher {
 		}
 		return lume;
 	}
-	
+
 	/**
 	 * generate the inverse of the input rgb array
 	 * @param rgb - an int array of rgb values
@@ -134,7 +142,7 @@ public class ImageGlitcher {
 			}
 		}
 	}
-	
+
 	/**
 	 * NOT SLOW, ACTUALLY DOES ITS JOB
 	 * sorts rgb array rows by luminance values
@@ -146,7 +154,7 @@ public class ImageGlitcher {
 			dependentQuicksort(rgb[y], lume[y], 0, rgb[y].length - 1);
 		}
 	}
-	
+
 	/**
 	 * NOT SLOW, ACTUALLY DOES ITS JOB
 	 * sorts rgb array colums by luminance values
@@ -253,11 +261,11 @@ public class ImageGlitcher {
 	 * @param in - a BufferedImage obj
 	 */
 	public void blockFlip(BufferedImage in) {
-		
+
 		int rh = in.getHeight();
 		int rw = in.getWidth();
 		int temp;
-		
+
 		for (int y = 0; y < rh / 2; y++) {
 			for (int x = 0; x < rw; x++) { 
 				temp = in.getRGB(x, y);
@@ -288,7 +296,84 @@ public class ImageGlitcher {
 		}
 		return rgb;
 	}
+
+	/**
+	 * shifts all values in a matrix right the specified number of cells
+	 * @param a - 2d array to translate
+	 * @param distance - number of pixels to shift right
+	 * @param edgeMode - what the left edge of the image should look like (use constants in ImageGlitcher class)
+	 * @throws IndexOutOfBoundsException
+	 */
+	public void translateX(int[][] a, int distance, int edgeMode) throws IndexOutOfBoundsException {
+		int[][] orig =  a.clone();
+		switch (edgeMode) {
+		case 0: // pad duplicates the leftmost row in the newly vacated space
+			for (int y = 0; y < a.length; y++) {
+				for (int x = a[y].length - 1; x >= distance; x--) {
+					a[y][x] = orig[y][x - distance];
+				}
+				for (int x = distance - 1; x >= 0; x--) {
+					a[y][x] = orig[y][distance];
+				}
+			}
+			break;
+		case 1: // reflect reflects the leftmost columns across the transform line		
+			for (int y = 0; y < a.length; y++) {
+				for (int x = a[y].length - 1; x >= distance; x--) {
+					a[y][x] = orig[y][x - distance];
+				}
+				for (int x = distance - 1; x >= 0; x--) {
+					a[y][x] = orig[y][distance + (distance - x)];
+				}
+			}
+			break;
+		case 2: // wrap moves the cropped portion of the image to the newly vacated columns
+			// TODO: Currently wraps twice. I assumed using array orig would fix this... it didn't.
+			for (int y = 0; y < a.length; y++) {
+				for (int x = 0; x < distance; x++) {
+					a[y][x] = orig[y][(orig[0].length - distance) + x];
+				}
+				for (int x = a[y].length - 1; x >= distance; x--) {
+					a[y][x] = orig[y][x - distance];
+				}
+			}
+			break;
+		}
+	}
 	
+	/**
+	 * extracts the given color channel from an rgb array
+	 * @param rgb - array to extract from
+	 * @param channel - channel to extract (use constants in ImageGlitcher class)
+	 * @return a color array (formatted like a lume array)
+	 */
+	public int[][] extractChannel(int[][] rgb, int channel) {
+		int[][] color = new int[rgb.length][rgb[0].length];
+		for (int y = 0; y < rgb.length; y++) {
+			for (int x = 0; x < rgb[0].length; x++) {
+				color[y][x] = rgb[y][x] >> channel & 0xFF;
+			}
+		}
+		return color;
+	}
+	
+	/**
+	 * blends three color channels into a single rgb array
+	 * @param r - red channel
+	 * @param g - green channel
+	 * @param b - blue channel
+	 * @return an rgb int array
+	 */
+	public int[][] blendChannels(int[][] r, int[][] g, int[][] b) {
+		int[][] rgb = new int[r.length][r[0].length];
+		for (int y = 0; y < r.length; y++) {
+			for (int x = 0; x < r[0].length; x++) {
+				rgb [y][x] = (r[y][x] << 16) + (g[y][x] << 8) + (b[y][x]);
+			}
+		}
+		return rgb;
+	}
+
 	/**
 	 * loads a buffered image from a file name
 	 * @param fileName - a string of the desired file name
@@ -303,7 +388,7 @@ public class ImageGlitcher {
 		}
 		return in;
 	}
-	
+
 	/**
 	 * saves image in to file
 	 * @param in
@@ -313,7 +398,7 @@ public class ImageGlitcher {
 		JPEGImageWriteParam jpegParams = new JPEGImageWriteParam(null);
 		jpegParams.setCompressionMode(ImageWriteParam.MODE_EXPLICIT);
 		jpegParams.setCompressionQuality(1f);
-		
+
 		try {
 			final ImageWriter writer = ImageIO.getImageWritersByFormatName("jpg").next();
 			// specifies where the jpg image has to be written
