@@ -342,6 +342,42 @@ public class ImageGlitcher {
 	}
 	
 	/**
+	 * applies a random x translation of between 0 and maxDistance pixels to each row of a. reflects the left edge for padding
+	 * @param a - array to be jittered
+	 * @param maxDistance - the maximum number of pixels a row should be shifted.
+	 */
+	public void jitterX(int[][] a, int maxDistance) {
+		int[][] orig = a.clone();
+		for (int y = 0; y < a.length; y++) {
+			int distance = (int) ((rand.nextDouble()) * maxDistance);
+			for (int x = a[y].length - 1; x >= distance; x--) {
+				a[y][x] = orig[y][x - distance];
+			}
+			for (int x = distance - 1; x >= 0; x--) {
+				a[y][x] = orig[y][distance + (distance - x)];
+			}
+		}
+	}
+	
+	/**
+	 * applies a random y translation of between 0 and maxDistance pixels to each column of a. reflects padding
+	 * @param a - array to be jittered
+	 * @param maxDistance - the maximum number of pixels a column should be shifted.
+	 */
+	public void jitterY(int[][] a, int maxDistance) {
+		int[][] orig = a.clone();
+		for (int x = 0; x < a[0].length; x++) {
+			int distance = (int) ((rand.nextDouble()) * maxDistance);
+			for (int y = a.length - 1; y >= distance; y--) {
+				a[y][x] = orig[y - distance][x];
+			}
+			for (int y = distance - 1; y >= 0; y--) {
+				a[y][x] = orig[distance + (distance - y)][x];
+			}
+		}
+	}
+	
+	/**
 	 * extracts the given color channel from an rgb array
 	 * @param rgb - array to extract from
 	 * @param channel - channel to extract (use constants in ImageGlitcher class)
@@ -390,9 +426,9 @@ public class ImageGlitcher {
 	}
 
 	/**
-	 * saves image in to file
-	 * @param in
-	 * @param fileName
+	 * saves image to file
+	 * @param in - BufferedImage object to save
+	 * @param fileName - string of a file name to use 
 	 */
 	public void save(BufferedImage in, String fileName) {
 		JPEGImageWriteParam jpegParams = new JPEGImageWriteParam(null);

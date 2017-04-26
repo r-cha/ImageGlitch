@@ -14,22 +14,24 @@ public class ImageManip {
 
 
 		ImageGlitcher glitch = new ImageGlitcher();	
-		ResourceGenerator gen = new ResourceGenerator();
+		//ResourceGenerator gen = new ResourceGenerator();
 
 		// Import image
 		BufferedImage in = glitch.load(inName);
 
-		// Channel extraction testing
+		// jitter and channel testing
 		int[][] rgb = glitch.generateRGB(in);
-		int[][] sort = gen.generateCheckerboard(rgb[0].length, rgb.length, 10);
+		//int[][] sort = gen.generateCheckerboard(rgb[0].length, rgb.length, 10);
+	
 		int[][] r = glitch.extractChannel(rgb, ImageGlitcher.CHANNEL_RED);
 		int[][] g = glitch.extractChannel(rgb, ImageGlitcher.CHANNEL_GREEN);
 		int[][] b = glitch.extractChannel(rgb, ImageGlitcher.CHANNEL_BLUE);
 	
-		glitch.translateX(r, 600, ImageGlitcher.EDGE_REFLECT);
-		glitch.dependentRowQuicksort(g, sort);
-		glitch.blockFlip(b);
-	
+		glitch.jitterY(r, 100);
+		glitch.jitterX(g, 100);
+		glitch.jitterX(b, 100);
+		glitch.jitterY(b, 100);
+
 		rgb = glitch.blendChannels(r, g, b);
 
 		glitch.rewriteImg(in, rgb);
