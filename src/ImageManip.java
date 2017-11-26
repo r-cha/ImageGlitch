@@ -1,45 +1,39 @@
 import java.awt.image.BufferedImage;
-import java.util.Random;
 
 public class ImageManip {
 	public static void main(String[] args) {
+		
+		ImageGlitcher glitch = new ImageGlitcher();
+		// ResourceGenerator gen = new ResourceGenerator();
 
-		String inName = "in.jpg";
-		String outName = "out.jpg";
-		//final int glitches = 30;
-		//int task;
-
-		//Random rand = new Random();
-
-
-
-		ImageGlitcher glitch = new ImageGlitcher();	
-		//ResourceGenerator gen = new ResourceGenerator();
-
-		// Import image
+		// arg0 = inName
+		// arg1 to arg n-2 = alterations
+		// argn-1 = outName
+		
+		String inName = args[0];
 		BufferedImage in = glitch.load(inName);
-
-		// jitter and channel testing
-		int[][] rgb = glitch.generateRGB(in);
-		//int[][] sort = gen.generateCheckerboard(rgb[0].length, rgb.length, 10);
-	
-		int[][] r = glitch.extractChannel(rgb, ImageGlitcher.CHANNEL_RED);
-		int[][] g = glitch.extractChannel(rgb, ImageGlitcher.CHANNEL_GREEN);
-		int[][] b = glitch.extractChannel(rgb, ImageGlitcher.CHANNEL_BLUE);
-	
-		glitch.jitterY(r, 100);
-		glitch.jitterX(g, 100);
-		glitch.jitterX(b, 100);
-		glitch.jitterY(b, 100);
-
-		rgb = glitch.blendChannels(r, g, b);
-
-		glitch.rewriteImg(in, rgb);
-
+		int[][] inRGB = glitch.generateRGB(in);
+		
+		for (int i = 1; i < args.length - 1; i++) {
+			
+			if (args[i].equals("jitterX")) {
+				
+				glitch.jitterX(inRGB, Integer.parseInt(args[i+1]));
+				i++;
+				glitch.rewriteImg(in, inRGB);
+				
+			} else if (args[i].equals("jitterY")) {
+				
+				glitch.jitterY(inRGB, Integer.parseInt(args[i+1]));
+				i++;
+				glitch.rewriteImg(in, inRGB);
+				
+			}
+			
+		}
+		
+		String outName = args[args.length-1];
 		glitch.save(in, outName);
-
-
-		System.err.println("Done!");
 
 	}
 }
